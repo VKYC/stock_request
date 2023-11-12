@@ -162,9 +162,13 @@
                                 readonly="1"
                                 groups="stock_request.group_stock_request_order"
                             />
-                            <field name="product_id" />
+                            <field name="product_id" domain="[('detailed_type', '=', 'product')]"/>
                             <field name="expected_date" />
                             <field name="picking_policy" />
+                            <field name="analytic_account_id"/>
+                            <field name="analytic_tag_ids" widget="many2many_tags"/>
+                            <field name="product_stock_state" decoration-success="product_stock_state == 'disponible'"
+                                   decoration-danger="product_stock_state == 'no_disponible'" force_save="1"/>
                         </group>
                         <group>
                             <field
@@ -172,11 +176,13 @@
                                 widget="selection"
                                 groups="stock.group_stock_multi_locations"
                             />
+                            <field name="warehouse_des_id"/>
                             <field name="allow_virtual_location" invisible="1" />
                             <field
                                 name="location_id"
                                 groups="stock.group_stock_multi_locations"
                             />
+                            <field name="location_des_id"/>
                             <field
                                 name="route_id"
                                 options="{'no_create': True}"
@@ -186,6 +192,7 @@
                             <field
                                 name="procurement_group_id"
                                 groups="stock.group_adv_location"
+                                invisible="1"
                             />
                             <field
                                 name="company_id"

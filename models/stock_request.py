@@ -120,7 +120,24 @@ class StockRequest(models.Model):
     )
     company_id = fields.Many2one(states={"draft": [("readonly", False)]}, readonly=True)
     route_id = fields.Many2one(states={"draft": [("readonly", False)]}, readonly=True)
+    warehouse_des_id = fields.Many2one(comodel_name="stock.request", string="Almacen destino")
+    location_des_id = fields.Many2one(comodel_name="stock.location", string="Ubicacion destino")
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Cuenta Analitica',
+                                          index=True, check_company=True, copy=True)
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Tags Analiticas',
+                                        store=True, readonly=False, check_company=True, copy=True)
+    product_stock_state = fields.Selection(selection=[
+        ('disponible', 'Disponible'), ('no_disponible', 'No disponible'),
+    ], string='Estatus en inventario', readonly=True, copmute='_compute_state_stock', compute_sudo=True)
+    product_tmpl_id = fields.Many2one(related="product_id.product_tmpl_id")
 
+    @api.onchange("product_id")
+    def _compute_state_stock(self):
+        for line_id in self:
+            if line_id.product_tmpl_id.qty_available > 0:
+                line_id.product_stock_state = 'disponible'
+            else:
+                line_id.product_stock_state = 'no_disponible'
     _sql_constraints = [
         ("name_uniq", "unique(name, company_id)", "Stock Request name must be unique")
     ]
@@ -217,7 +234,7 @@ class StockRequest(models.Model):
             raise ValidationError(_("The picking policy must be equal to the order"))
 
     def _action_confirm(self):
-        self._action_launch_procurement_rule()
+        # self._action_launch_procurement_rule()
         self.write({"state": "open"})
 
     def action_confirm(self):

@@ -234,7 +234,7 @@ class StockRequest(models.Model):
             raise ValidationError(_("The picking policy must be equal to the order"))
 
     def _action_confirm(self):
-        # self._action_launch_procurement_rule()
+        self._action_launch_procurement_rule()
         self.write({"state": "open"})
 
     def action_confirm(self):

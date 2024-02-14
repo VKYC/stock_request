@@ -149,8 +149,9 @@
                                     <field name="procurement_group_id" invisible="1" />
                                     <field name="company_id" invisible="1" />
                                     <field name="state" />
-                                    <field name="analytic_account_id"/>
-                                    <field name="analytic_tag_ids" widget="many2many_tags"/>
+                                    <field name="analytic_account_id" options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="analytic_tag_ids" widget="many2many_tags"
+                                           options="{'no_open': True, 'no_create': True}"/>
                                     <field name="product_stock_state" force_save="1"/>
                                 </tree>
                             </field>

@@ -162,6 +162,21 @@ class StockRequestOrder(models.Model):
             record.picking_ids = record.stock_request_ids.mapped("picking_ids")
             record.picking_count = len(record.picking_ids)
 
+    @api.onchange('stock_request_ids')
+    def _onchange_stock_request_ids(self):
+        for order_id in self:
+            for request_id in order_id.stock_request_ids:
+                if request_id.product_uom_qty:
+                    available_qty = self.env["stock.quant"].\
+                        _get_available_quantity(request_id.product_id, request_id.location_id)
+                    if available_qty <= 0:
+                        raise UserError(f"No hay cantidad disponible de productos: {request_id.product_id.display_name}"
+                                        f" en esta ruta {request_id.route_id.name}.")
+                    elif available_qty == request_id.product_uom_qty or available_qty <= request_id.product_uom_qty:
+                        request_id.product_uom_qty = available_qty
+
+
+
     @api.depends("stock_request_ids")
     def _compute_move_ids(self):
         for record in self:

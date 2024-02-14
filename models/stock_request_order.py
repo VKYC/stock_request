@@ -168,7 +168,7 @@ class StockRequestOrder(models.Model):
             for request_id in order_id.stock_request_ids:
                 if request_id.product_uom_qty:
                     available_qty = self.env["stock.quant"].\
-                        _get_available_quantity(request_id.product_id, request_id.location_id)
+                        _get_available_quantity(request_id.product_id, request_id.route_id.rule_ids[0].location_src_id)
                     if available_qty <= 0:
                         raise UserError(f"No hay cantidad disponible de productos: {request_id.product_id.display_name}"
                                         f" en esta ruta {request_id.route_id.name}.")

@@ -133,6 +133,7 @@ class StockRequest(models.Model):
     location_src_qty_available = fields.Float(compute='_compute_review_qty_available_location_src',
                                               string='Disponible cantidad')
 
+    @api.onchange('route_id')
     def _compute_review_qty_available_location_src(self):
         for request_id in self:
             if len(request_id.route_id.rule_ids) > 1 and request_id.product_id:

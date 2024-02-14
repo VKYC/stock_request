@@ -122,7 +122,8 @@
                                 <tree editable="bottom" decoration-success="product_stock_state == 'disponible'"
                                       decoration-danger="product_stock_state == 'no_disponible'">
                                     <field name="name" readonly="1" />
-                                    <field name="product_id" />
+                                    <field name="product_id"
+                                           options="{'no_open': True, 'no_create': True}"/>
                                     <field name="allowed_uom_categ_id" invisible="1" />
                                     <field
                                         name="product_uom_id"
@@ -134,6 +135,7 @@
                                         options="{'no_create': True}"
                                         groups="stock.group_stock_multi_locations"
                                     />
+                                    <field name="location_src_qty_available"/>
                                     <field name="route_ids" invisible="1" />
                                     <field name="product_uom_qty" />
                                     <field name="qty_in_progress" />

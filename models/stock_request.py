@@ -130,6 +130,17 @@ class StockRequest(models.Model):
         ('disponible', 'Disponible'), ('no_disponible', 'No disponible'),
     ], string='Estatus en inventario', readonly=True, copmute='_compute_state_stock', compute_sudo=True)
     product_tmpl_id = fields.Many2one(related="product_id.product_tmpl_id")
+    location_src_qty_available = fields.Float(compute='_compute_review_qty_available_location_src',
+                                              string='Disponible cantidad')
+
+    def _compute_review_qty_available_location_src(self):
+        for request_id in self:
+            if len(request_id.route_id.rule_ids) > 1 and request_id.product_id:
+                available_qty = self.env["stock.quant"]. \
+                    _get_available_quantity(request_id.product_id, request_id.route_id.rule_ids[0].location_src_id)
+                request_id.location_src_qty_available = available_qty
+            else:
+                request_id.location_src_qty_available = 0
 
     @api.onchange("product_id")
     def _compute_state_stock(self):

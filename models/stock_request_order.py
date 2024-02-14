@@ -166,7 +166,7 @@ class StockRequestOrder(models.Model):
     def _onchange_stock_request_ids(self):
         for order_id in self:
             for request_id in order_id.stock_request_ids:
-                if request_id.product_uom_qty:
+                if request_id.product_uom_qty and len(request_id.route_id.rule_ids) > 1:
                     available_qty = self.env["stock.quant"].\
                         _get_available_quantity(request_id.product_id, request_id.route_id.rule_ids[0].location_src_id)
                     if available_qty <= 0:

@@ -8,6 +8,8 @@
                 <field name="name" />
                 <field name="warehouse_id" groups="stock.group_stock_multi_locations" />
                 <field name="location_id" groups="stock.group_stock_multi_locations" />
+                <field name="route_ids" widget="many2many_tags"/>
+                <field name="requested_by"/>
                 <field name="state" />
             </tree>
         </field>

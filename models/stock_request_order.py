@@ -138,10 +138,19 @@ class StockRequestOrder(models.Model):
     stock_request_count = fields.Integer(
         string="Stock requests", compute="_compute_stock_request_count", readonly=True
     )
+    route_ids = fields.Many2many(comodel_name='stock.location.route', compute='compute_route_ids', string='Ruta')
 
     _sql_constraints = [
         ("name_uniq", "unique(name, company_id)", "Stock Request name must be unique")
     ]
+
+    def compute_route_ids(self):
+        for order_id in self:
+            route_ids = self.env['stock.location.route']
+            for request_id in order_id.stock_request_ids:
+                if request_id.route_id not in route_ids:
+                    route_ids += request_id.route_id
+            order_id.route_ids = route_ids
 
     @api.depends("stock_request_ids.state")
     def _compute_state(self):

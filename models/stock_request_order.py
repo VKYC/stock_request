@@ -171,20 +171,34 @@ class StockRequestOrder(models.Model):
             record.picking_ids = record.stock_request_ids.mapped("picking_ids")
             record.picking_count = len(record.picking_ids)
 
-    @api.onchange('stock_request_ids')
-    def _onchange_stock_request_ids(self):
-        for order_id in self:
-            for request_id in order_id.stock_request_ids:
-                if request_id.product_uom_qty and len(request_id.route_id.rule_ids) > 1:
-                    available_qty = self.env["stock.quant"].\
-                        _get_available_quantity(request_id.product_id, request_id.route_id.rule_ids[0].location_src_id)
-                    if available_qty <= 0:
-                        raise UserError(f"No hay cantidad disponible de productos: {request_id.product_id.display_name}"
-                                        f" en esta ruta {request_id.route_id.name}.")
-                    elif available_qty == request_id.product_uom_qty or available_qty <= request_id.product_uom_qty:
-                        request_id.product_uom_qty = available_qty
-
-
+    def write(self, vals):
+        if 'stock_request_ids' in vals:
+            for val in vals['stock_request_ids']:
+                if val[2]:
+                    request_id = self.env['stock.request'].search([('id', '=', val[1])], limit=1)
+                    route_int_id = val[2].get("route_id") or request_id.route_id
+                    product_uom_qty = val[2].get("product_uom_qty") or request_id.product_uom_qty
+                    product_int_id = val[2].get("product_id") or request_id.product_id
+                    if request_id and route_int_id and product_int_id and product_uom_qty:
+                        if isinstance(product_int_id, int):
+                            product_id = self.env['product.product'].search([('id', '=', product_int_id)], limit=1)
+                        else:
+                            product_id = product_int_id
+                        if isinstance(route_int_id, int):
+                            route_id = self.env['stock.location.route'].search([('id', '=', route_int_id)], limit=1)
+                        else:
+                            route_id = route_int_id
+                        if product_uom_qty and len(request_id.route_id.rule_ids) > 1:
+                            available_qty = self.env["stock.quant"].\
+                                _get_available_quantity(product_id, route_id.rule_ids[0].location_src_id)
+                            if available_qty <= 0:
+                                raise UserError(f"No hay cantidad disponible de productos: "
+                                                f"{request_id.product_id.display_name}"
+                                                f" en esta ruta {request_id.route_id.name}.")
+                            elif available_qty == product_uom_qty or available_qty <= product_uom_qty:
+                                val[2]['product_uom_qty'] = available_qty
+        res = super(StockRequestOrder, self).write(vals)
+        return res
 
     @api.depends("stock_request_ids")
     def _compute_move_ids(self):

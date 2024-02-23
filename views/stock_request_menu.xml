@@ -8,6 +8,18 @@
         sequence="100"
     />
     <menuitem
+        id="menu_stock_request_consult_inventory"
+        parent="menu_stock_request_root"
+        name="Consulta Inventario"
+        sequence="10"
+    />
+    <menuitem
+        id="stock_request_view_location_menu"
+        name="Ubicaciones"
+        parent="menu_stock_request_consult_inventory"
+        action="stock_request_view_location_action"
+    />
+    <menuitem
         id="menu_stock_request_operations"
         parent="menu_stock_request_root"
         name="Operations"

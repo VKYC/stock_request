@@ -218,10 +218,11 @@
         <field name="view_mode">tree,form</field>
     </record>
     <record model="ir.actions.act_window" id="stock_request_view_location_action">
-        <field name="name">Reporte por ubicaciones</field>
+        <field name="name">Reporte por Ubicaciones</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">stock.quant</field>
         <field name="view_mode">tree</field>
         <field name="view_id" ref="stock_request.view_stock_quant_tree_stock_request" />
+        <field name="domain">[('show_location_report', '=', 1)]</field>
     </record>
 </odoo>

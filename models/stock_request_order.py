@@ -179,7 +179,7 @@ class StockRequestOrder(models.Model):
                     if 'virtual_' in val[1]:
                         request_int_id = request_int_id.split('_')[1]
                     request_id = self.env['stock.request'].search([('id', '=', request_int_id)], limit=1)
-                    route_int_id = val[2].get("route_id") or request_id.route_id
+                    route_int_id = val[2].get("route_id") or (request_id and request_id.route_id)
                     product_uom_qty = val[2].get("product_uom_qty") or request_id.product_uom_qty
                     product_int_id = val[2].get("product_id") or request_id.product_id
                     if request_id and route_int_id and product_int_id and product_uom_qty:

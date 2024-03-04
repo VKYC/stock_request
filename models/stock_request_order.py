@@ -176,7 +176,7 @@ class StockRequestOrder(models.Model):
             for val in vals['stock_request_ids']:
                 if val[2]:
                     request_int_id = val[1]
-                    if 'virtual_' in val[1]:
+                    if not isinstance(request_int_id, int) and 'virtual_' in val[1]:
                         request_int_id = request_int_id.split('_')[1]
                     request_id = self.env['stock.request'].search([('id', '=', request_int_id)], limit=1)
                     route_int_id = val[2].get("route_id") or (request_id and request_id.route_id)

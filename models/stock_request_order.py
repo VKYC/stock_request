@@ -325,7 +325,22 @@ class StockRequestOrder(models.Model):
             upd_vals["name"] = self.env["ir.sequence"].next_by_code(
                 "stock.request.order"
             )
-        return super().create(upd_vals)
+        order_id = super().create(upd_vals)
+        for request_id in order_id.stock_request_ids:
+            route_id = request_id.route_id
+            product_uom_qty = request_id.product_uom_qty
+            product_id = request_id.product_id
+            if request_id and product_uom_qty and route_id:
+                if product_uom_qty and len(request_id.route_id.rule_ids) > 1:
+                    available_qty = self.env["stock.quant"].\
+                        _get_available_quantity(product_id, route_id.rule_ids[0].location_src_id)
+                    if available_qty <= 0:
+                        raise UserError(f"No hay cantidad disponible de productos: "
+                                        f"{request_id.product_id.display_name}"
+                                        f" en esta ruta {request_id.route_id.name}.")
+                    elif available_qty == product_uom_qty or available_qty <= product_uom_qty:
+                        request_id.product_uom_qty = available_qty
+        return order_id
 
     def unlink(self):
         if self.filtered(lambda r: r.state != "draft"):

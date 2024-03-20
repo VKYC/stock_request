@@ -258,6 +258,9 @@ class StockRequest(models.Model):
         return True
 
     def action_cancel(self):
+        for picking_id in self.picking_ids:
+            if picking_id.state == 'done':
+                raise UserError(f"El picking: '{picking_id.display_name}' esta 'HECHO', no se puede cancelar la orden")
         self.sudo().mapped("move_ids")._action_cancel()
         self.write({"state": "cancel"})
         return True

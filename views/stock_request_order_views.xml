@@ -155,7 +155,7 @@
                                     <field name="state" />
                                     <field name="analytic_account_id" invisible="1"
                                            options="{'no_open': True, 'no_create': True}"/>
-                                    <field name="analytic_tag_ids" widget="many2many_tags" invisible="1"
+                                    <field name="analytic_tag_ids" widget="many2many_tags" invisible="0"
                                            options="{'no_open': True, 'no_create': True}"/>
                                     <field name="product_stock_state" force_save="1"/>
                                 </tree>
